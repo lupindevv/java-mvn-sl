@@ -22,4 +22,8 @@ class Docker implements Serializable {
             }
         }
     }
+    
+    BuildImage buildDockerImage(String imageName) {
+        return new BuildImage(imageName, '.')
+    }
 }
