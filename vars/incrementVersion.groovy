@@ -19,15 +19,22 @@ def call(Map params = [:]) {
     }
     
     def fileContent = readFile(file: versionFile)
+    def major = 0
+    def minor = 0
+    def patch = 0
+    
+    // Use matcher in a local scope to avoid serialization
     def matcher = fileContent =~ versionPattern
     
-    if (!matcher.find()) {
+    if (matcher.find()) {
+        major = matcher.group(1).toInteger()
+        minor = matcher.group(2).toInteger()
+        patch = matcher.group(3).toInteger()
+        // Explicitly null out the matcher to avoid serialization issues
+        matcher = null
+    } else {
         error "Could not find version pattern in file: ${versionFile}"
     }
-    
-    def major = matcher.group(1).toInteger()
-    def minor = matcher.group(2).toInteger()
-    def patch = matcher.group(3).toInteger()
     
     echo "Current version: ${major}.${minor}.${patch}"
     
@@ -51,9 +58,13 @@ def call(Map params = [:]) {
     def newVersion = "${major}.${minor}.${patch}"
     echo "New version: ${newVersion}"
     
-    // Replace version in file
-    def newContent = fileContent.replaceFirst(versionPattern, "version=${newVersion}")
-    writeFile(file: versionFile, text: newContent)
+    // Replace version in file using a regex pattern
+    // Use a different approach to avoid storing matcher objects
+    def replacement = fileContent.replaceAll(versionPattern) { 
+        return "version=${newVersion}" 
+    }
+    
+    writeFile(file: versionFile, text: replacement)
     
     return newVersion
 }
