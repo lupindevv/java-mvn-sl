@@ -1,4 +1,4 @@
-// File: vars/incrementVersion.groovy
+#!/usr/bin/env groovy
 
 /**
  * Increments the version number of a project according to semantic versioning

@@ -1,4 +1,4 @@
-// File: vars/jarReference.groovy
+#!/usr/bin/env groovy
 
 /**
  * Creates or updates a reference to a JAR file with the current version
